@@ -8,6 +8,9 @@ OWM_API_KEY = os.environ.get("OWM_API_KEY")
 def get_weather():
     url = f"http://api.openweathermap.org/data/2.5/weather?q=Seoul&appid={OWM_API_KEY}&units=metric&lang=kr"
     res = requests.get(url).json()
+    print("API 응답:", res)
+    if "main" not in res:
+        raise Exception(f"날씨 API 오류: {res}")
     temp     = res["main"]["temp"]
     feels    = res["main"]["feels_like"]
     desc     = res["weather"][0]["description"]
@@ -20,7 +23,8 @@ def send_kakao(message):
     data = {
         "template_object": '{"object_type":"text","text":"' + message + '","link":{"web_url":"https://weather.naver.com"}}'
     }
-    requests.post(url, headers=headers, data=data)
+    r = requests.post(url, headers=headers, data=data)
+    print("카카오 응답:", r.text)
 
 def main():
     temp, feels, desc, humidity = get_weather()
