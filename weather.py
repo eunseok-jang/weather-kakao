@@ -2,7 +2,8 @@ import requests
 import os
 from datetime import datetime
 
-KAKAO_TOKEN = os.environ.get("KAKAO_TOKEN")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 OWM_API_KEY = os.environ.get("OWM_API_KEY")
 
 def get_weather():
@@ -17,14 +18,14 @@ def get_weather():
     humidity = res["main"]["humidity"]
     return temp, feels, desc, humidity
 
-def send_kakao(message):
-    url = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
-    headers = {"Authorization": f"Bearer {KAKAO_TOKEN}"}
+def send_telegram(message):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     data = {
-        "template_object": '{"object_type":"text","text":"' + message + '","link":{"web_url":"https://weather.naver.com"}}'
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message
     }
-    r = requests.post(url, headers=headers, data=data)
-    print("카카오 응답:", r.text)
+    r = requests.post(url, data=data)
+    print("텔레그램 응답:", r.text)
 
 def main():
     temp, feels, desc, humidity = get_weather()
@@ -39,6 +40,6 @@ def main():
         f"━━━━━━━━━━━━━━\n"
         f"오늘도 좋은 하루 되세요 ☀️"
     )
-    send_kakao(msg)
+    send_telegram(msg)
 
 main()
